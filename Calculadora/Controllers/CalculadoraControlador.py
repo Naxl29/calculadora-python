@@ -14,25 +14,37 @@ class ControladorCalculadora:
                 case '1':
                     while True:
                         try:
-                            n1, signo, n2 = self.vista.datos()
-                            
-                            while signo not in ["/", "x", "+", "-"]:
-                                print(Fore.RED + "Opción incorrecta. Por favor, ingrese una operación válida: /, x, +, -." + Style.RESET_ALL)
-                                n1, signo, n2 = self.vista.datos()
-
-                            self.modelo.agregar_operacion(n1, signo, n2)
+                            n1 = self.vista.n1()
+                            signo = self.vista.signo()
+                            while True:
+                                if signo in ["/", "*", "+", "-"]:
+                                    try:
+                                        n2 = self.vista.n2()
+                                        self.modelo.agregar_operacion(n1, signo, n2)
+                                        break
+                                    except ValueError:
+                                        print(Fore.RED + "Opción incorrecta" + Style.RESET_ALL)
+                                else:
+                                    print(Fore.RED + "Opción incorrecta. Por favor, ingrese una operación válida: /, *, +, -." + Style.RESET_ALL)
+                                    signo = self.vista.signo()
 
                             id_operacion = self.modelo.ultimo_id()
                         
                             if signo == "/":
-                                resultado = n1 / n2
-                                print(Fore.GREEN + f"El resultado es: {resultado}")
-                                self.modelo.agregar_resultado(resultado)
+                                try:
+                                    if n2 == 0:
+                                        raise ZeroDivisionError(Fore.RED + "No se puede dividir entre cero" + Style.RESET_ALL)
+                                    else:
+                                        resultado = n1 / n2
+                                        print(Fore.GREEN + f"El resultado es: {resultado}")
+                                        self.modelo.agregar_resultado(resultado)
 
-                                id_resultado = self.modelo.ultimo_id()
-                                self.modelo.op_re(id_operacion, id_resultado)
-                                break
-                            elif signo == "x":
+                                    id_resultado = self.modelo.ultimo_id()
+                                    self.modelo.op_re(id_operacion, id_resultado)
+                                    break
+                                except ZeroDivisionError as ce:
+                                    print(ce)
+                            elif signo == "*":
                                 resultado = n1 * n2
                                 print(Fore.GREEN + f"El resultado es: {resultado}")
                                 self.modelo.agregar_resultado(resultado)
@@ -59,10 +71,34 @@ class ControladorCalculadora:
                         except ValueError:
                             print(Fore.RED + "Opción incorrecta" + Style.RESET_ALL)
                 case '2':
-                    operaciones = self.modelo.ver_historial()
-                    self.vista.historial(operaciones) 
+                    while True:
+                        op = self.vista.preguntar_historial()
+                        if op == "si":
+                            operaciones = self.modelo.ver_historial()
+                            self.vista.historial_t(operaciones)
+                            break
+                        elif op == "no":
+                            operaciones = self.modelo.ver_h()
+                            self.vista.historial(operaciones)
+                            break
+                        else:
+                            print(Fore.RED + "Opción incorrecta" + Style.RESET_ALL) 
 
                 case '3':
+                    operaciones = self.modelo.ver_historial()
+                    self.vista.historial_t(operaciones)
+                    while True:
+                        eli = self.vista.eliminar()
+                        if eli == "si":
+                            self.modelo.borrar_historial()
+                            print(Fore.GREEN + "El historial ha sido eliminado" + Style.RESET_ALL)
+                            break
+                        elif eli == "no":
+                            break
+                        else:
+                            print(Fore.RED + "Opción incorrecta" + Style.RESET_ALL) 
+
+                case '4':
                     print(Fore.CYAN + "Saliendo de la calculadora")
                     sys.exit(0)
                 case _:

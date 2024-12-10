@@ -22,6 +22,13 @@ class ModeloCalculadora:
         self.conn.commit()
     
     def ver_historial(self):
+        self.cursor.execute("""SELECT o.id, o.n1, o.signo, o.n2, r.resultado
+                FROM operaciones_resultados AS op
+                JOIN operaciones AS o ON op.id_operacion = o.id
+                JOIN resultados AS r ON op.id_resultado = r.id""")
+        return self.cursor.fetchall()
+    
+    def ver_h(self):
         self.cursor.execute("""SELECT CONCAT(o.n1, o.signo, o.n2, ' = ', r.resultado) AS operacion
                 FROM operaciones_resultados AS op
                 JOIN operaciones AS o ON op.id_operacion = o.id
@@ -37,3 +44,12 @@ class ModeloCalculadora:
         consulta = "SELECT LAST_INSERT_ID()"
         self.cursor.execute(consulta)
         return self.cursor.fetchone()[0]
+
+    def borrar_historial(self):
+        consulta_relaciones = "DELETE FROM operaciones_resultados"
+        self.cursor.execute(consulta_relaciones, ())
+        consulta1 = "DELETE FROM operaciones"
+        self.cursor.execute(consulta1, ())
+        consulta2 = "DELETE FROM resultados"
+        self.cursor.execute(consulta2, ())
+        self.conn.commit()

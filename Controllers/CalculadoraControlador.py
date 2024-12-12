@@ -28,18 +28,16 @@ class ControladorCalculadora:
                             id_operacion = self.modelo.ultimo_id()
                         
                             if signo == "/":
-                                while True:
-                                    try:
-                                        resultado = n1 / n2
-                                        print(Fore.GREEN + f"El resultado es: {resultado}")
-                                        self.modelo.agregar_resultado(resultado)
-                                        
-                                        id_resultado = self.modelo.ultimo_id()
-                                        self.modelo.op_re(id_operacion, id_resultado)
-                                        break
-                                    except ZeroDivisionError:
-                                        print(Fore.RED + "Error: No se puede dividir por 0" + Style.RESET_ALL)
-                                break
+                                try:
+                                    resultado = n1 / n2
+                                    print(Fore.GREEN + f"El resultado es: {resultado}")
+                                    self.modelo.agregar_resultado(resultado)
+                                    
+                                    id_resultado = self.modelo.ultimo_id()
+                                    self.modelo.op_re(id_operacion, id_resultado)
+                                    break
+                                except ZeroDivisionError:
+                                    print(Fore.RED + "Error: No se puede dividir por 0" + Style.RESET_ALL)        
                             elif signo == "*":
                                 resultado = n1 * n2
                                 print(Fore.GREEN + f"El resultado es: {resultado}")
